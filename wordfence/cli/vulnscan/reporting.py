@@ -86,6 +86,7 @@ class HumanReadableWriter(RowlessWriter):
         link = vuln.get_wordfence_link()
         blue = escape(color=Color.BLUE)
         white = '\033[0;38;5;7m'
+        symbol_color = '\033[0;38;5;7m'
         severity = None
         if isinstance(record.vulnerability, ProductionVulnerability):
             if record.vulnerability.cvss is not None:
@@ -103,7 +104,7 @@ class HumanReadableWriter(RowlessWriter):
         title_end = title_parts[1].strip() if len(title_parts) > 1 else ""
 
         return (
-            f'{yellow_bold}{title_start}{RESET} <= {white}{title_end}{RESET}\n'
+            f'{yellow_bold}{title_start}{RESET} {symbol_color}<= {white}{title_end}{RESET}\n'
             f'{white}Type: {sw.type}\n'
             f'{white}Slug: {sw.slug}\n'
             f'{white}Class: {severity_message}vulnerability\n'
