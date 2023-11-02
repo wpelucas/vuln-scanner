@@ -99,7 +99,7 @@ class HumanReadableWriter(RowlessWriter):
         return (
             f'{white}{vuln.title} in '
             f'{sw.slug}({sw.version}) as {severity_message}vulnerability\n'
-            f'{white}Details: {blue}{link}{RESET}'
+            f'{white}Details: {blue}{link}{RESET}\n'
             )
 
     def write_record(self, record) -> None:
