@@ -168,7 +168,7 @@ class VulnScanReport(Report):
         records = []
         for vulnerability in vulnerabilities.values():
             if vulnerability and not self.message_printed:  # If the vulnerability is not None or not empty and message has not been printed
-                print("\033[1m\033[36mPossible vulnerabilities found:\033[0m")
+                print("\033[1m\033[36mPossible vulns found:\033[0m")
                 self.message_printed = True  # Set the flag to True after printing the message
             record = VulnScanReportRecord(
                     software,
@@ -179,7 +179,7 @@ class VulnScanReport(Report):
 
     def __del__(self):
         if not self.message_printed:
-            print("\033[1m\033[32mNo vulnerabilities found!\033[0m\n")
+            print("\033[1m\033[32mNo vulns found!\033[0m\n")
 
 
 VULN_SCAN_REPORT_CONFIG_OPTIONS = get_config_options(
