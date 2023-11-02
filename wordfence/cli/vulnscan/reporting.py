@@ -97,8 +97,8 @@ class HumanReadableWriter(RowlessWriter):
             severity_color = self.get_severity_color(severity)
             severity_message = f'{severity_color}{severity}{white} severity '
         return (
-            f'{white}Found {severity_message}vulnerability {vuln.title} in '
-            f'{sw.slug}({sw.version})\n'
+            f'{white}{vuln.title} in '
+            f'{sw.slug}({sw.version}) as {severity_message}vulnerability\n'
             f'{white}Details: {blue}{link}{RESET}'
             )
 
