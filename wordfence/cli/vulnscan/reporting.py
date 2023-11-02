@@ -85,7 +85,7 @@ class HumanReadableWriter(RowlessWriter):
         yellow_bold = escape(color=Color.YELLOW, bold=True)
         link = vuln.get_wordfence_link()
         blue = escape(color=Color.BLUE)
-        white = escape(color=Color.WHITE)
+        white = '\033[37m'
         severity = None
         if isinstance(record.vulnerability, ProductionVulnerability):
             if record.vulnerability.cvss is not None:
