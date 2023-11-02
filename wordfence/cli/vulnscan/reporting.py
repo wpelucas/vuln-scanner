@@ -77,7 +77,7 @@ class HumanReadableWriter(RowlessWriter):
             return escape(color=Color.WHITE, bold=True)
         if severity == 'high' or severity == 'critical':
             return escape(color=Color.RED, bold=True)
-        return escape(color=Color.YELLOW, bold=True)
+        return '\033[1;38;5;208m'
 
     def format_record(self, record) -> str:
         vuln = record.vulnerability
