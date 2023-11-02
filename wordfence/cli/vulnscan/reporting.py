@@ -158,7 +158,7 @@ class VulnScanReport(Report):
                 write_headers=write_headers
             )
         self.row_counter = 0
-        self.vulnerabilities_found = False
+        self.vulnerability_message_shown = False  # Flag to track if vulnerability message has been shown
 
     def add_result(self, software: ScannableSoftware, vulnerabilities: Dict[str, Vulnerability]) -> None:
         records = []
@@ -166,14 +166,14 @@ class VulnScanReport(Report):
             record = VulnScanReportRecord(software, vulnerability)
             records.append(record)
 
-        if records:  # If vulnerabilities were found
-            self.row_counter += len(records)
-            if not self.vulnerabilities_found:  # If vulnerabilities have not been found before
-                print("\033[1m\033[36mPossible vulnerabilities found:\033[0m")
-                self.vulnerabilities_found = True  # Mark that vulnerabilities have been found
-            self.write_records(records)
-        
-        elif not self.vulnerabilities_found:  # If no vulnerabilities have been found so far
+        if records and not self.vulnerability_message_shown:  # If vulnerabilities were found and message has not been shown
+            print("\033[1m\033[36mPossible vulnerabilities found:\033[0m")
+            self.vulnerability_message_shown = True  # Mark that the message has been shown
+
+        self.row_counter += len(records)  # Update total row count
+        self.write_records(records)
+
+        if self.row_counter == 0 and not self.vulnerability_message_shown:  # If no rows have been added and no vulnerabilities found
             print("\033[1m\033[32mNo vulnerabilities found!\033[0m\n")
 
     def write_message(self, message: str) -> None:
