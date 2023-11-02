@@ -18,7 +18,7 @@ class VulnScanReportColumn(ReportColumnEnum):
     VERSION = 'version', lambda record: record.software.version
     ID = 'id', \
         lambda record: record.vulnerability.identifier
-    TITLE = 'title', lambda record: record.software.title
+    TITLE = 'title', lambda record: record.vulnerability.title
     LINK = 'link', lambda record: record.vulnerability.get_wordfence_link()
     DESCRIPTION = 'description', \
         lambda record: record.vulnerability.description, \
@@ -98,6 +98,7 @@ class HumanReadableWriter(RowlessWriter):
             severity_message = f'{severity_color}{severity}{white} severity '
         return (
             f'{yellow_bold}{vuln.title}{RESET}\n'
+            f'{white}Type: {sw.type}\n'
             f'{white}Version: {sw.version}\n'
             f'{white}Slug: {sw.slug}\n'
             f'{white}Class: {severity_message}vulnerability\n'
