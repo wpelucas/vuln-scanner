@@ -231,17 +231,17 @@ class VulnScanSubcommand(Subcommand):
                 if self._requires_paths() and path_count == 0:
                     self._raise_path_error()
             for path in self.config.wordpress_path:
-                log.info(f'Scanning core installation at {path}...')
+    # log.info(f'Scanning core installation at {path}...')
                 self._scan(
-                        path,
-                        scanner,
-                        structure_options=structure_options
-                    )
+                    path,
+                    scanner,
+                    structure_options=structure_options
+                )
             for path in self.config.plugin_directory:
-                log.info(f'Scanning plugin directory at {path}...')
+                # log.info(f'Scanning plugin directory at {path}...')
                 self._scan_plugin_directory(path, scanner)
             for path in self.config.theme_directory:
-                log.info(f'Scanning theme directory at {path}...')
+                # log.info(f'Scanning theme directory at {path}...')
                 self._scan_theme_directory(path, scanner)
             self._output_summary(scanner)
         return 0
