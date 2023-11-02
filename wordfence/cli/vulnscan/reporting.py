@@ -177,6 +177,10 @@ class VulnScanReport(Report):
             records.append(record)
         self.write_records(records)
 
+    def __del__(self):
+        if not self.message_printed:
+            print("\033[1m\033[32mNo vulnerabilities found!\033[0m\n")
+
 
 VULN_SCAN_REPORT_CONFIG_OPTIONS = get_config_options(
         VulnScanReportFormat,
