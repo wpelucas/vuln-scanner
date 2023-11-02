@@ -97,10 +97,10 @@ class VulnScanSubcommand(Subcommand):
         total_count = scanner.get_total_count()
         unique_label = self._get_vulnerability_label(unique_count)
         total_label = self._get_vulnerability_label(total_count)
-        log.info(
-                f'Found {unique_count} unique {unique_label} / {total_count} '
-                f'total {total_label}'
-            )
+        # log.info(
+        #         f'Found {unique_count} unique {unique_label} / {total_count} '
+        #         f'total {total_label}'
+        #     )
 
     def _validate_vulnerability_ids(
                 self,
