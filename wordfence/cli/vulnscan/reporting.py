@@ -142,7 +142,6 @@ class VulnScanReportRecord(ReportRecord):
 
 
 class VulnScanReport(Report):
-
     def __init__(
                 self,
                 format: VulnScanReportFormat,
@@ -154,6 +153,8 @@ class VulnScanReport(Report):
                 columns=columns,
                 write_headers=write_headers
             )
+        self.row_counter = 0
+        self.no_vulnerabilities_message_written = False
 
     def add_result(
                 self,
@@ -167,7 +168,19 @@ class VulnScanReport(Report):
                     vulnerability
                 )
             records.append(record)
-        self.write_records(records)
+        if not records:  # If no vulnerabilities were found
+            if self.row_counter == 0 and not self.no_vulnerabilities_message_written:
+                self.write_message("No vulnerabilities found")
+                self.no_vulnerabilities_message_written = True
+        else:  # If vulnerabilities were found
+            if self.row_counter == 0:
+                self.write_message("Possible vulnerabilities found")
+            self.row_counter += len(records)
+            self.write_records(records)
+
+    def write_message(self, message: str) -> None:
+        for writer in self.writers:
+            writer.write(message)
 
 
 VULN_SCAN_REPORT_CONFIG_OPTIONS = get_config_options(
