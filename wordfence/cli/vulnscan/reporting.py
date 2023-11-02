@@ -159,7 +159,6 @@ class VulnScanReport(Report):
                 write_headers=write_headers
             )
         self.row_count = 0
-        print("\033[1m\033[32mNo vulnerabilities found!\033[0m\n")  # Default message
 
     def add_result(
                 self,
@@ -179,6 +178,10 @@ class VulnScanReport(Report):
                 print("\033[1m\033[36mPossible vulnerabilities found:\033[0m")  # Update message
             self.row_count += len(records)
             self.write_records(records)
+
+    def finish(self) -> None:
+        if self.row_count == 0:
+            print("\033[1m\033[32mNo vulnerabilities found!\033[0m\n")
 
 
 VULN_SCAN_REPORT_CONFIG_OPTIONS = get_config_options(
