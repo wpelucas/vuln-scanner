@@ -174,17 +174,19 @@ class VulnScanReport(Report):
                 )
             records.append(record)
         
-        if records:  # If vulnerabilities were found
+        self.row_counter += len(records)
+
+        if self.row_counter > 0:  # If vulnerabilities were found
             if not self.vulnerabilities_found:
                 print("\033[1m\033[36mPossible vulnerabilities found:\033[0m")
                 self.vulnerabilities_found = True  # Set the flag to True
-            self.row_counter += len(records)
             self.write_records(records)
-
+        
         # Only write "No vulnerabilities found!" if no vulnerabilities found so far and the message has not been written before
-        if not self.row_counter and not self.vulnerabilities_found and not self.no_vulnerabilities_message_written:
-            self.write_message("\033[1m\033[32mNo vulnerabilities found!\033[0m\n")
-            self.no_vulnerabilities_message_written = True
+        else:
+            if not self.no_vulnerabilities_message_written:
+                self.write_message("\033[1m\033[32mNo vulnerabilities found!\033[0m\n")
+                self.no_vulnerabilities_message_written = True
 
     def write_message(self, message: str) -> None:
         for writer in self.writers:
