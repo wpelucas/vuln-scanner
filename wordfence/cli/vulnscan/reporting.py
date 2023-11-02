@@ -98,10 +98,10 @@ class HumanReadableWriter(RowlessWriter):
             severity_message = f'{severity_color}{severity}{white} severity '
         return (
             f'{white}{vuln.title}\n'
-            f'{white}Class: {severity_message}vulnerability\n'
             f'{white}Version: {sw.version}\n'
             f'{white}Slug: {sw.slug}\n'
-            f'{white}Details: {blue}{link}{RESET}\n'
+            f'{white}Class: {severity_message}vulnerability\n'
+            f'{white}Details: {link}{RESET}\n'
             )
 
     def write_record(self, record) -> None:
