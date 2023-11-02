@@ -173,6 +173,7 @@ class VulnScanReport(Report):
                 self.message_displayed = True  # Mark that the message has been displayed
             self.write_records(records)
         
+    def finalize(self):
         # If no records have been written, print "No vulnerabilities found!"
         if self.row_counter == 0 and not self.message_displayed:
             self.write_message("\033[1m\033[32mNo vulnerabilities found!\033[0m\n")
