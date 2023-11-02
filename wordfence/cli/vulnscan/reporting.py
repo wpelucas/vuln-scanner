@@ -146,6 +146,7 @@ class VulnScanReportRecord(ReportRecord):
 
 
 class VulnScanReport(Report):
+    message_printed = False  # Class variable to track if the message has been printed
 
     def __init__(
                 self,
@@ -158,7 +159,6 @@ class VulnScanReport(Report):
                 columns=columns,
                 write_headers=write_headers
             )
-        self.row_count = 0
 
     def add_result(
                 self,
@@ -167,21 +167,15 @@ class VulnScanReport(Report):
             ) -> None:
         records = []
         for vulnerability in vulnerabilities.values():
+            if vulnerability and not self.message_printed:  # If the vulnerability is not None or not empty and message has not been printed
+                print("\033[1m\033[36mPossible vulnerabilities found:\033[0m")
+                self.message_printed = True  # Set the flag to True after printing the message
             record = VulnScanReportRecord(
                     software,
                     vulnerability
                 )
             records.append(record)
-
-        if records:
-            if self.row_count == 0:  # This is the first batch of rows
-                print("\033[1m\033[36mPossible vulnerabilities found:\033[0m")  # Update message
-            self.row_count += len(records)
-            self.write_records(records)
-
-    def finish(self) -> None:
-        if self.row_count == 0:
-            print("\033[1m\033[32mNo vulnerabilities found!\033[0m\n")
+        self.write_records(records)
 
 
 VULN_SCAN_REPORT_CONFIG_OPTIONS = get_config_options(
