@@ -82,7 +82,7 @@ class HumanReadableWriter(RowlessWriter):
     def format_record(self, record) -> str:
         vuln = record.vulnerability
         sw = record.software
-        yellow = escape(color=Color.YELLOW)
+        yellow_bold = escape(color=Color.YELLOW, bold=True)
         link = vuln.get_wordfence_link()
         blue = escape(color=Color.BLUE)
         white = escape(color=Color.WHITE)
@@ -97,7 +97,7 @@ class HumanReadableWriter(RowlessWriter):
             severity_color = self.get_severity_color(severity)
             severity_message = f'{severity_color}{severity}{white} severity '
         return (
-            f'{yellow}{sw.title}\n'
+            f'{yellow_bold}{vuln.title}{RESET}\n'
             f'{white}Version: {sw.version}\n'
             f'{white}Slug: {sw.slug}\n'
             f'{white}Class: {severity_message}vulnerability\n'
