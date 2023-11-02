@@ -146,6 +146,7 @@ class VulnScanReportRecord(ReportRecord):
 
 
 class VulnScanReport(Report):
+
     def __init__(
                 self,
                 format: VulnScanReportFormat,
@@ -157,30 +158,25 @@ class VulnScanReport(Report):
                 columns=columns,
                 write_headers=write_headers
             )
-        self.row_counter = 0
 
-    def add_result(self, software: ScannableSoftware, vulnerabilities: Dict[str, Vulnerability]) -> None:
+    def add_result(
+                self,
+                software: ScannableSoftware,
+                vulnerabilities: Dict[str, Vulnerability]
+            ) -> None:
         records = []
         for vulnerability in vulnerabilities.values():
-            record = VulnScanReportRecord(software, vulnerability)
+            record = VulnScanReportRecord(
+                    software,
+                    vulnerability
+                )
             records.append(record)
 
-        self.row_counter += len(records)  # Update total row count
-        self.write_records(records)
-
-        # If rows have been added, print possible vulnerabilities message
-        if self.row_counter > 0:
-            print("\033[1m\033[36mPossible vulnerabilities found:\033[0m")
-        else:
-            # If no rows have been added, print no vulnerabilities message
+        if len(records) == 0:
             print("\033[1m\033[32mNo vulnerabilities found!\033[0m\n")
-
-    def write_message(self, message: str) -> None:
-        for writer in self.writers:
-            if isinstance(writer, HumanReadableWriter):
-                writer.write_message(message)
-            else:
-                writer.write(message)
+        else:
+            print("\033[1m\033[36mPossible vulnerabilities found:\033[0m")
+            self.write_records(records)
 
 
 VULN_SCAN_REPORT_CONFIG_OPTIONS = get_config_options(
