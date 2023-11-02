@@ -178,7 +178,7 @@ class VulnScanReport(Report):
             self.row_counter += len(records)
             self.write_records(records)
 
-    def finalize_report(self) -> None:
+    def __del__(self) -> None:
         if self.row_counter == 0:  # If no vulnerabilities were found
             self.write_message("\033[1m\033[32mNo vulnerabilities found!\033[0m\n")
 
