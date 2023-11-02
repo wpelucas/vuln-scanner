@@ -82,10 +82,10 @@ class HumanReadableWriter(RowlessWriter):
     def format_record(self, record) -> str:
         vuln = record.vulnerability
         sw = record.software
-        yellow_bold = escape(color=Color.YELLOW, bold=True)
+        yellow_bold = '\033[1;38;5;226m'
         link = vuln.get_wordfence_link()
         blue = escape(color=Color.BLUE)
-        white = '\033[37m'
+        white = escape(color=Color.WHITE)
         severity = None
         if isinstance(record.vulnerability, ProductionVulnerability):
             if record.vulnerability.cvss is not None:
