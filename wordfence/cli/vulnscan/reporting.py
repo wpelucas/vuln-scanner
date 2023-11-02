@@ -180,6 +180,7 @@ class VulnScanReport(Report):
             if not self.vulnerabilities_found:
                 print("\033[1m\033[36mPossible vulnerabilities found:\033[0m")
                 self.vulnerabilities_found = True  # Set the flag to True
+                self.no_vulnerabilities_message_written = True  # Update this flag here
             self.write_records(records)
         
         # Only write "No vulnerabilities found!" if no vulnerabilities found so far and the message has not been written before
