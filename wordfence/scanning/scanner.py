@@ -163,27 +163,37 @@ class FileLocator:
     def search_directory(self, path: str, parents: Optional[list] = None):
         try:
             if parents is None:
-                parents = self._get_all_parents(path)
+                parents = [path]
             contents = os.scandir(path)
             for item in contents:
                 if item.is_symlink() and self._is_loop(item.path, parents):
                     continue
+
+                link_owner_id = os.lstat(item.path).st_uid
+                link_owner_name = pwd.getpwuid(link_owner_id).pw_name
+                if link_owner_name in {"root", "nobody"}:
+                    log.warning(f"Skipping {item.path} symlink owned by root or nobody")
+                    continue
+
+                target_path = os.path.realpath(item.path)  # Get the target path of the item
                 if item.is_dir():
-                    yield from self.search_directory(
-                            item.path,
-                            parents + self._get_all_parents(item.path)
+                    try:
+                        yield from self.search_directory(
+                            target_path,
+                            parents + [target_path]
                         )
+                    except PermissionError:
+                        log.warning(f"Skipping {target_path} due to insufficient permissions")
                 elif item.is_file():
-                    if not self.file_filter.filter(item.path):
-                        self.skipped_count += 1
+                    if not self.file_filter.filter(target_path):
                         continue
                     self.located_count += 1
-                    yield item.path
+                    yield target_path
         except OSError as os_error:
             detail = str(os_error)
             raise ScanningIoException(
-                    f'Directory search of {path} failed ({detail})'
-                ) from os_error
+                f"Directory search of {path} failed ({detail})"
+            ) from os_error
 
     def locate(self):
         real_path = os.path.realpath(self.path)
