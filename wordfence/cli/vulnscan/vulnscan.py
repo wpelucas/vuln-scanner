@@ -98,9 +98,8 @@ class VulnScanSubcommand(Subcommand):
         unique_label = self._get_vulnerability_label(unique_count)
         total_label = self._get_vulnerability_label(total_count)
         log.info(
-                '\033[32m' + # ANSI escape code for green
-                f'Found {unique_count} unique {unique_label} / {total_count} total {total_label}' +
-                '\033[0m'  # ANSI escape code to reset color
+                f'Found {unique_count} unique {unique_label} / {total_count} '
+                f'total {total_label}'
             )
 
     def _validate_vulnerability_ids(
