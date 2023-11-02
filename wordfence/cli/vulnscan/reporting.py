@@ -72,6 +72,10 @@ class VulnScanReportColumn(ReportColumnEnum):
 
 class HumanReadableWriter(RowlessWriter):
 
+    def __init__(self, stream):
+        super().__init__(stream)
+        self.report_initiated = False
+    
     def get_severity_color(self, severity: str) -> str:
         if severity == 'none' or severity == 'low':
             return escape(color=Color.WHITE, bold=True)
@@ -103,8 +107,18 @@ class HumanReadableWriter(RowlessWriter):
             )
 
     def write_record(self, record) -> None:
+        if not self.report_initiated:
+            if record._parent.record_count > 0:
+                self._target.write("Possible vulnerabilities found:\n")
+            else:
+                self._target.write("No malware found (⊃｡•́‿•̀｡)⊃\n")
+            self.report_initiated = True
         self._target.write(self.format_record(record))
         self._target.write('\n')
+        
+    def finalize(self):
+        if not self.report_initiated:
+            self._target.write("No malware found (⊃｡•́‿•̀｡)⊃\n")
 
 
 REPORT_FORMAT_HUMAN = ReportFormat(
@@ -142,24 +156,24 @@ class VulnScanReportRecord(ReportRecord):
 
 
 class VulnScanReport(Report):
-
     def __init__(
-                self,
-                format: VulnScanReportFormat,
-                columns: List[VulnScanReportColumn],
-                write_headers: bool = False
-            ):
+            self,
+            format: VulnScanReportFormat,
+            columns: List[VulnScanReportColumn],
+            write_headers: bool = False
+        ):
         super().__init__(
                 format=format,
                 columns=columns,
                 write_headers=write_headers
             )
+        self.record_count = 0
 
     def add_result(
-                self,
-                software: ScannableSoftware,
-                vulnerabilities: Dict[str, Vulnerability]
-            ) -> None:
+            self,
+            software: ScannableSoftware,
+            vulnerabilities: Dict[str, Vulnerability]
+        ) -> None:
         records = []
         for vulnerability in vulnerabilities.values():
             record = VulnScanReportRecord(
@@ -168,6 +182,7 @@ class VulnScanReport(Report):
                 )
             records.append(record)
         self.write_records(records)
+        self.record_count += len(records)
 
 
 VULN_SCAN_REPORT_CONFIG_OPTIONS = get_config_options(
