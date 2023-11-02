@@ -89,7 +89,7 @@ class Vulnerability:
             try:
                 url_object = Url(url)
                 if url_object.get_hostname() == 'www.wordfence.com':
-                    url_object.set_query_parameter('source', 'cli-scan')
+                    #url_object.set_query_parameter('source', 'cli-scan')
                     return str(url_object)
             except ValueError:
                 continue
