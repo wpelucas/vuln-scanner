@@ -5,6 +5,7 @@ TEXT_BANNER = r"""
 """
 
 LOGO = r"""
+Scanning plugins and themes for vulnerabilities...
 """
 
 
