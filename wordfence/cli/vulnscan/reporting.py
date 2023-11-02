@@ -85,7 +85,7 @@ class HumanReadableWriter(RowlessWriter):
         yellow_bold = escape(color=Color.YELLOW, bold=True)
         link = vuln.get_wordfence_link()
         blue = escape(color=Color.BLUE)
-        white = escape(color=Color.WHITE)
+        white = '\033[0;38;5;7m'
         severity = None
         if isinstance(record.vulnerability, ProductionVulnerability):
             if record.vulnerability.cvss is not None:
@@ -105,7 +105,6 @@ class HumanReadableWriter(RowlessWriter):
         return (
             f'{yellow_bold}{title_start}{RESET} <= {white}{title_end}{RESET}\n'
             f'{white}Type: {sw.type}\n'
-            f'{white}Version: {sw.version}\n'
             f'{white}Slug: {sw.slug}\n'
             f'{white}Class: {severity_message}vulnerability\n'
             f'{white}Details: {link}{RESET}\n'
