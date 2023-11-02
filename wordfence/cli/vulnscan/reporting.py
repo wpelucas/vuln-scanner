@@ -102,7 +102,7 @@ class HumanReadableWriter(RowlessWriter):
             f'{white}Version: {sw.version}\n'
             f'{white}Slug: {sw.slug}\n'
             f'{white}Class: {severity_message}vulnerability\n'
-            f'{white}Patched: {vuln.patched}\n'
+            f'{white}Patched: {sw.patched}\n'
             f'{white}Details: {link}{RESET}\n'
             )
 
