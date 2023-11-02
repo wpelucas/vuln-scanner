@@ -74,13 +74,11 @@ class HumanReadableWriter(RowlessWriter):
 
     def get_severity_color(self, severity: str) -> str:
         if severity == 'none' or severity == 'low':
-            return escape(color=Color.WHITE, bold=True)
+            return escape(color=Color.BLUE, bold=True)
         if severity == 'high' or severity == 'critical':
             return escape(color=Color.RED, bold=True)
         return '\033[1;38;5;208m'
 
-    WHITE = '\033[37m'
-    
     def format_record(self, record) -> str:
         vuln = record.vulnerability
         sw = record.software
@@ -100,11 +98,11 @@ class HumanReadableWriter(RowlessWriter):
             severity_message = f'{severity_color}{severity}{white} severity '
         return (
             f'{yellow_bold}{vuln.title}{RESET}\n'
-            f'{self.WHITE}Type: {sw.type}\n'
-            f'{self.WHITE}Version: {sw.version}\n'
-            f'{self.WHITE}Slug: {sw.slug}\n'
-            f'{self.WHITE}Class: {severity_message}vulnerability\n'
-            f'{self.WHITE}Details: {link}{RESET}\n'
+            f'{white}Type: {sw.type}\n'
+            f'{white}Version: {sw.version}\n'
+            f'{white}Slug: {sw.slug}\n'
+            f'{white}Class: {severity_message}vulnerability\n'
+            f'{white}Details: {link}{RESET}\n'
             )
 
     def write_record(self, record) -> None:
