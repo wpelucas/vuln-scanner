@@ -158,6 +158,8 @@ class VulnScanReport(Report):
                 columns=columns,
                 write_headers=write_headers
             )
+        self.row_count = 0
+        self.first_time = True
 
     def add_result(
                 self,
@@ -172,11 +174,16 @@ class VulnScanReport(Report):
                 )
             records.append(record)
 
-        if len(records) == 0:
-            print("\033[1m\033[32mNo vulnerabilities found!\033[0m\n")
-        else:
-            print("\033[1m\033[36mPossible vulnerabilities found:\033[0m")
+        if records:
+            if self.first_time:
+                print("\033[1m\033[36mPossible vulnerabilities found:\033[0m")
+                self.first_time = False
+            self.row_count += len(records)
             self.write_records(records)
+
+    def finish(self) -> None:
+        if self.row_count == 0:
+            print("\033[1m\033[32mNo vulnerabilities found!\033[0m\n")
 
 
 VULN_SCAN_REPORT_CONFIG_OPTIONS = get_config_options(
