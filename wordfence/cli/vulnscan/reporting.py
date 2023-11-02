@@ -162,10 +162,10 @@ class VulnScanReport(Report):
         self.no_vulnerabilities_message_written = False  # Restore the flag
 
     def add_result(
-            self,
-            software: ScannableSoftware,
-            vulnerabilities: Dict[str, Vulnerability]
-        ) -> None:
+        self,
+        software: ScannableSoftware,
+        vulnerabilities: Dict[str, Vulnerability]
+    ) -> None:
         records = []
         for vulnerability in vulnerabilities.values():
             record = VulnScanReportRecord(
@@ -183,6 +183,7 @@ class VulnScanReport(Report):
             if self.row_counter == 0 and not self.vulnerabilities_found:
                 print("\033[1m\033[36mPossible vulnerabilities found:\033[0m")
                 self.vulnerabilities_found = True  # Set the flag to True
+                self.no_vulnerabilities_message_written = True  # Update this flag as well
             self.row_counter += len(records)
             self.write_records(records)
 
