@@ -82,7 +82,7 @@ class HumanReadableWriter(RowlessWriter):
     def format_record(self, record) -> str:
         vuln = record.vulnerability
         sw = record.software
-        yellow_bold = '\033[1;38;5;226m'
+        yellow_bold = escape(color=Color.YELLOW, bold=True)
         link = vuln.get_wordfence_link()
         blue = escape(color=Color.BLUE)
         white = escape(color=Color.WHITE)
@@ -96,8 +96,14 @@ class HumanReadableWriter(RowlessWriter):
             severity = severity.lower()
             severity_color = self.get_severity_color(severity)
             severity_message = f'{severity_color}{severity}{white} severity '
+
+        # Split the vuln.title on the first occurrence of hyphen -
+        title_parts = vuln.title.split('-', 1)
+        title_start = title_parts[0].strip()
+        title_end = title_parts[1].strip() if len(title_parts) > 1 else ""
+
         return (
-            f'{yellow_bold}{vuln.title}{RESET}\n'
+            f'{yellow_bold}{title_start}{RESET} - {white}{title_end}{RESET}\n'
             f'{white}Type: {sw.type}\n'
             f'{white}Version: {sw.version}\n'
             f'{white}Slug: {sw.slug}\n'
