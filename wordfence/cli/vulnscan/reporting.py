@@ -158,8 +158,6 @@ class VulnScanReport(Report):
                 write_headers=write_headers
             )
         self.row_counter = 0
-        self.no_vulnerabilities_message_written = False
-        self.found_vulnerabilities = False  # Track whether any vulnerabilities were found
 
     def add_result(
                 self,
@@ -173,19 +171,16 @@ class VulnScanReport(Report):
                     vulnerability
                 )
             records.append(record)
-        
+
         if records:  # If vulnerabilities were found
-            self.found_vulnerabilities = True
             if self.row_counter == 0:
                 print("\033[1m\033[36mPossible vulnerabilities found:\033[0m")
             self.row_counter += len(records)
             self.write_records(records)
 
-    def finalize_report(self):
-        # This method should be called after all software have been checked
-        if not self.found_vulnerabilities and not self.no_vulnerabilities_message_written:
+    def finalize_report(self) -> None:
+        if self.row_counter == 0:  # If no vulnerabilities were found
             self.write_message("\033[1m\033[32mNo vulnerabilities found!\033[0m\n")
-            self.no_vulnerabilities_message_written = True
 
     def write_message(self, message: str) -> None:
         for writer in self.writers:
