@@ -105,6 +105,10 @@ class HumanReadableWriter(RowlessWriter):
     def write_record(self, record) -> None:
         self._target.write(self.format_record(record))
         self._target.write('\n')
+    
+    def write_message(self, message: str) -> None:
+        self._target.write(message)
+        self._target.write('\n')
 
 
 REPORT_FORMAT_HUMAN = ReportFormat(
@@ -180,7 +184,10 @@ class VulnScanReport(Report):
 
     def write_message(self, message: str) -> None:
         for writer in self.writers:
-            writer.write(message)
+            if isinstance(writer, HumanReadableWriter):
+                writer.write_message(message)
+            else:
+                writer.write(message)
 
 
 VULN_SCAN_REPORT_CONFIG_OPTIONS = get_config_options(
