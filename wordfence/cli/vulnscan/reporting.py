@@ -159,6 +159,7 @@ class VulnScanReport(Report):
                 columns=columns,
                 write_headers=write_headers
             )
+        self.vulnerability_count = 0  # Counter for vulnerabilities
 
     def add_result(
                 self,
@@ -167,15 +168,21 @@ class VulnScanReport(Report):
             ) -> None:
         records = []
         for vulnerability in vulnerabilities.values():
-            if vulnerability and not self.message_printed:  # If the vulnerability is not None or not empty and message has not been printed
-                print("\033[1m\033[36mPossible vulnerabilities found:\033[0m")
-                self.message_printed = True  # Set the flag to True after printing the message
-            record = VulnScanReportRecord(
-                    software,
-                    vulnerability
-                )
-            records.append(record)
+            if vulnerability:  # If the vulnerability is not None or not empty
+                self.vulnerability_count += 1  # Increase vulnerability counter
+                if not self.message_printed:  # And if message has not been printed
+                    print("\033[1m\033[36mPossible vulnerabilities found:\033[0m")
+                    self.message_printed = True  # Set the flag to True after printing the message
+                record = VulnScanReportRecord(
+                        software,
+                        vulnerability
+                    )
+                records.append(record)
         self.write_records(records)
+
+        # If no vulnerabilities are found after scanning all software
+        if self.vulnerability_count == 0:
+            print("\033[1m\033[32mNo vulnerabilities found!\033[0m\n")
 
 
 VULN_SCAN_REPORT_CONFIG_OPTIONS = get_config_options(
