@@ -46,6 +46,6 @@ class Version:
         if latest_version is None:
             return
 
-        if version.parse(__version__) < version.parse(latest_version):
-            log.warning('A newer version of the Wordfence CLI is available! '
-                        'Updating to ' + latest_version + ' is recommended.')
+        # if version.parse(__version__) < version.parse(latest_version):
+        #     log.warning('A newer version of the Wordfence CLI is available! '
+        #                 'Updating to ' + latest_version + ' is recommended.')
