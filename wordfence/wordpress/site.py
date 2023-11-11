@@ -34,9 +34,12 @@ ALTERNATE_RELATIVE_CONTENT_PATHS = [
 
 @dataclass
 class WordpressStructureOptions:
-    relative_content_paths: List[str] = field(default_factory=list)
-    relative_plugins_paths: List[str] = field(default_factory=list)
-    relative_mu_plugins_paths: List[str] = field(default_factory=list)
+    core_path: str = ''
+    content_relative_path: str = '/wp-content'
+    content_relative_paths: List[str] = field(default_factory=lambda: ['/www', '/staging'])
+    plugin_relative_path: str = '/plugins'
+    mu_plugin_relative_path: str = '/mu-plugins'
+    theme_relative_path: str = '/themes'
 
 
 class WordpressSite:
@@ -131,16 +134,13 @@ class WordpressSite:
         for path in ALTERNATE_RELATIVE_CONTENT_PATHS:
             yield self.resolve_core_path(path)
 
-    def _locate_content_directory(self) -> str:
-        for path in self._generate_possible_content_paths():
-            log.debug(f'Checking potential content path: {path}')
-            possible_themes_path = self._resolve_path('themes', path)
-            if os.path.isdir(path) and os.path.isdir(possible_themes_path):
-                log.debug(f'Located content directory at {path}')
-                return path
-        raise WordpressException(
-                f'Unable to locate content directory for site at {self.path}'
-            )
+    def _locate_content_directory(self) -> Path:
+        for path in self.structure_options.content_relative_paths:
+            full_path = self.core_path / path
+            if full_path.exists() and (full_path / 'plugins').exists():
+                return full_path
+
+        raise WordpressException(f"Unable to locate content directory for site at {self.core_path}")
 
     def get_content_directory(self) -> str:
         if not hasattr(self, 'content_path'):
