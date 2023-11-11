@@ -40,7 +40,7 @@ class WordpressStructureOptions:
 
 
 class WordpressSite:
-
+    
     def __init__(
                 self,
                 path: str,
@@ -52,11 +52,12 @@ class WordpressSite:
             self.structure_options = structure_options
         else:
             self.structure_options = WordpressStructureOptions()
-            www_path = os.path.join(path, 'www')
-            staging_path = os.path.join(path, 'staging')
-            self.structure_options.relative_content_paths.append(www_path)
-            if os.path.isdir(staging_path):
-                self.structure_options.relative_content_paths.append(staging_path)
+            www_content_path = os.path.join(path, 'www', 'wp-content')
+            staging_content_path = os.path.join(path, 'staging', 'wp-content')
+            if os.path.isdir(www_content_path):
+                self.structure_options.relative_content_paths.append(www_content_path)
+            if os.path.isdir(staging_content_path):
+                self.structure_options.relative_content_paths.append(staging_content_path)
 
     def _is_core_directory(self, path: str) -> bool:
         return True
