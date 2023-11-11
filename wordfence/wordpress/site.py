@@ -28,6 +28,8 @@ EVALUATION_OPTIONS = PhpEvaluationOptions(
     )
 
 ALTERNATE_RELATIVE_CONTENT_PATHS = [
+        '../www',
+        '../staging'
     ]
 
 
@@ -128,7 +130,7 @@ class WordpressSite:
             )
         if configured is not None:
             yield configured
-        for path in self.structure_options.relative_content_paths:
+        for path in self.structure_options.content_relative_paths:
             yield self.resolve_core_path(path)
         for path in ALTERNATE_RELATIVE_CONTENT_PATHS:
             yield self.resolve_core_path(path)
