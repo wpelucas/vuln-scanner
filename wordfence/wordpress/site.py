@@ -137,8 +137,12 @@ class WordpressSite:
     def _locate_content_directory(self) -> Path:
         for path in self.structure_options.content_relative_paths:
             full_path = self.core_path / path
-            if full_path.exists() and (full_path / 'plugins').exists():
-                return full_path
+            # Check if the full path exists before proceeding
+            if full_path.exists():
+                content_path = full_path / self.structure_options.content_relative_path
+                # Check if the content path exists before proceeding
+                if content_path.exists() and (content_path / 'plugins').exists():
+                    return content_path
 
         raise WordpressException(f"Unable to locate content directory for site at {self.core_path}")
 
