@@ -12,6 +12,7 @@ from ...logging import log
 from ..subcommands import Subcommand
 from .reporting import VulnScanReportManager
 from .exceptions import VulnScanningConfigurationException
+from wordfence.wordpress.exceptions import WordpressException
 
 
 class VulnScanSubcommand(Subcommand):
