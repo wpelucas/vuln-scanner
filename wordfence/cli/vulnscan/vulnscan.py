@@ -205,12 +205,9 @@ class VulnScanSubcommand(Subcommand):
                 self._initialize_filter(feed_variant)
             )
         structure_options = WordpressStructureOptions(
-                #core_path=self.config.core_path,
-                content_relative_path=self.config.content_relative_path,
-                content_relative_paths=self.config.content_relative_paths,
-                plugin_relative_path=self.config.plugin_relative_path,
-                mu_plugin_relative_path=self.config.mu_plugin_relative_path,
-                theme_relative_path=self.config.theme_relative_path
+                relative_content_paths=self.config.relative_content_path,
+                relative_plugins_paths=self.config.relative_plugins_path,
+                relative_mu_plugins_paths=self.config.relative_mu_plugins_path
             )
         with report_manager.open_output_file() as output_file:
             report = report_manager.initialize_report(output_file)
