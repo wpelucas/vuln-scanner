@@ -1,4 +1,5 @@
 import os
+import pwd
 import os.path
 from dataclasses import dataclass, field
 from typing import Optional, List, Generator
@@ -91,10 +92,12 @@ class WordpressSite:
         for file in os.scandir(path):
             try:
                 if file.is_dir():
-                    if file.name not in ["wp-includes", "wp-admin"]:
+                    uid = file.stat().st_uid
+                    username = pwd.getpwuid(uid).pw_name
+                    if username not in ['root', 'nobody'] and file.name not in ["wp-includes", "wp-admin"]:
                         directories.append(file.path)
-            except PermissionError:
-                print(f"Warning: Permission denied for {file.path}. Skipping this directory.")
+            except (PermissionError, FileNotFoundError):
+                print(f"Warning: Permission denied or file not found for {file.path}. Skipping this file/directory.")
                 continue
         return directories
 
