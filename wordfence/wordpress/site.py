@@ -51,6 +51,9 @@ class WordpressSite:
             if structure_options is not None else WordpressStructureOptions()
 
     def _is_core_directory(self, path: str) -> bool:
+        if os.path.basename(path) in ["wp-includes", "wp-admin"]:
+            return False
+
         missing_files = EXPECTED_CORE_FILES.copy()
         missing_directories = EXPECTED_CORE_DIRECTORIES.copy()
         try:
@@ -86,7 +89,7 @@ class WordpressSite:
     def _get_child_directories(self, path: str) -> List[str]:
         directories = []
         for file in os.scandir(path):
-            if file.is_dir():
+            if file.is_dir() and file.name not in ["wp-includes", "wp-admin"]:
                 directories.append(file.path)
         return directories
 
