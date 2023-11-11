@@ -28,8 +28,6 @@ EVALUATION_OPTIONS = PhpEvaluationOptions(
     )
 
 ALTERNATE_RELATIVE_CONTENT_PATHS = [
-        '../www',
-        '../staging'
     ]
 
 
