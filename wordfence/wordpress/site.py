@@ -46,7 +46,7 @@ class WordpressSite:
                 structure_options: Optional[WordpressStructureOptions] = None,
             ):
         self.path = path
-        self.core_path = self._locate_core()
+        #self.core_path = self._locate_core()
         self.structure_options = structure_options \
             if structure_options is not None else WordpressStructureOptions()
 
