@@ -18,6 +18,8 @@ EXPECTED_CORE_FILES = {
         WP_BLOG_HEADER_NAME
     }
 EXPECTED_CORE_DIRECTORIES = {
+        '../www',
+        '../staging'
     }
 
 EVALUATION_OPTIONS = PhpEvaluationOptions(
