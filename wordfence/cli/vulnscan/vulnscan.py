@@ -74,16 +74,15 @@ class VulnScanSubcommand(Subcommand):
             check_extensions: bool = False,
             structure_options: WordpressStructureOptions = None
         ) -> Dict[str, Vulnerability]:
-        site = WordpressSite(
-                path=path,
-                structure_options=structure_options
-            )
-        # Commented out the lines which checks for WordPress files and version
-        # log.debug(f'Located WordPress files at {site.core_path}')
-        # version = site.get_version()
-        # log.debug(f'WordPress Core Version: {version}')
-        # scanner.scan_core(version)
-        if check_extensions:
+        try:
+            site = WordpressSite(
+                    path=path,
+                    structure_options=structure_options
+                )
+        except WordpressException:
+            log.debug('Unable to locate WordPress core files. Proceeding to scan plugins and themes...')
+            site = None
+        if check_extensions and site:
             self._scan_plugins(site.get_all_plugins(), scanner)
             self._scan_themes(site.get_themes(), scanner)
 
