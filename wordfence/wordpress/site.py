@@ -89,7 +89,7 @@ class WordpressSite:
     def _resolve_path(self, path: str, base: str) -> str:
         return os.path.join(base, path.lstrip('/'))
 
-    def resolve_path(self, path: str) -> str:
+    def resolve_core_path(self, path: str) -> str:
         return self._resolve_path(path, self.path)
 
     def resolve_core_path(self, path: str) -> str:
@@ -99,7 +99,7 @@ class WordpressSite:
         return self._resolve_path(path, self.get_content_directory())
 
     def get_version(self) -> str:
-        version_path = self.resolve_core_path('wp-includes/version.php')
+        version_path = self.resolve_path('wp-includes/version.php')
         context = parse_php_file(version_path)
         try:
             state = context.evaluate(
@@ -116,8 +116,8 @@ class WordpressSite:
 
     def _locate_config_file(self) -> str:
         paths = [
-                self.resolve_core_path('wp-config.php'),
-                os.path.join(os.path.dirname(self.core_path), 'wp-config.php')
+                self.resolve_path('wp-config.php'),
+                os.path.join(os.path.dirname(self.path), 'wp-config.php')
             ]
         for path in paths:
             if os.path.isfile(path):
