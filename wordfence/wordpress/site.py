@@ -139,17 +139,18 @@ class WordpressSite:
         for path in ALTERNATE_RELATIVE_CONTENT_PATHS:
             yield self.resolve_core_path(path)
 
-    def _locate_content_directory(self) -> str:
-        for path in self._generate_possible_content_paths():
-            log.debug(f'Checking potential content path: {path}')
-            possible_themes_path = self._resolve_path('themes', path)
-            if os.path.isdir(path) and os.path.isdir(possible_themes_path):
-                log.debug(f'Located content directory at {path}')
-                return path
-        raise WordpressException(
-                f'Unable to locate content directory for site at {self.path}'
-            )
+    def _locate_content_directory(self):
+        for relative_content_path in self.structure_options.relative_content_paths:
+            absolute_content_path = os.path.join(self.path, relative_content_path)
+            if os.path.isdir(absolute_content_path) and self._content_exists(absolute_content_path):
+                return absolute_content_path
+        raise WordpressException(f"Unable to locate content directory for site at {self.path}")
 
+    def _content_exists(self, content_path):
+        # Check if the directory contains the expected WordPress content
+        # You might have to customize this logic based on your exact requirements
+        return os.path.isdir(os.path.join(content_path, 'plugins')) and os.path.isdir(os.path.join(content_path, 'themes'))
+    
     def get_content_directory(self) -> str:
         if not hasattr(self, 'content_path'):
             self.content_path = self._locate_content_directory()
