@@ -181,16 +181,20 @@ class WordpressSite:
     def get_plugins(self, mu: bool = False) -> List[Plugin]:
         log_plugins = 'must-use plugins' if mu else 'plugins'
         plugins = []
+        found_directory = False
         for path in self._generate_possible_plugins_paths(mu):
             log.debug(f'Checking potential {log_plugins} path: {path}')
             loader = PluginLoader(path)
             try:
-                plugins += loader.load_all()
-                log.debug(f'Located {log_plugins} directory at {path}')
+                loaded_plugins = loader.load_all()
+                if loaded_plugins is not None:
+                    found_directory = True
+                    plugins += loaded_plugins
+                    log.debug(f'Located {log_plugins} directory at {path}')
             except ExtensionException:
                 # If extensions can't be loaded, the directory is not valid
                 continue
-        if not plugins and not mu:
+        if not found_directory and not mu:
             raise WordpressException(
                     f'Unable to locate {log_plugins} directory for site at '
                     f'{self.path}'
