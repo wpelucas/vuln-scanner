@@ -129,14 +129,14 @@ class WordpressSite:
 
     def _generate_possible_content_paths(self) -> Generator[str, None, None]:
         configured = self._extract_string_from_config(
-                'WP_CONTENT_DIR'
-            )
+            'WP_CONTENT_DIR'
+        )
         if configured is not None:
             yield configured
         for path in self.structure_options.relative_content_paths:
-            yield self.resolve_core_path(path)
+            yield self.resolve_core_path(os.path.join(path, 'wp-content'))
         for path in ALTERNATE_RELATIVE_CONTENT_PATHS:
-            yield self.resolve_core_path(path)
+            yield self.resolve_core_path(os.path.join(path, 'wp-content'))
 
     def _locate_content_directory(self) -> str:
         for path in self._generate_possible_content_paths():
