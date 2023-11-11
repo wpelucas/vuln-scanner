@@ -52,9 +52,11 @@ class WordpressSite:
             self.structure_options = structure_options
         else:
             self.structure_options = WordpressStructureOptions()
-            self.structure_options.relative_content_paths.append('../www')
-            if os.path.isdir(os.path.join(path, 'staging')):
-                self.structure_options.relative_content_paths.append('../staging')
+            www_path = os.path.join(path, 'www')
+            staging_path = os.path.join(path, 'staging')
+            self.structure_options.relative_content_paths.append(www_path)
+            if os.path.isdir(staging_path):
+                self.structure_options.relative_content_paths.append(staging_path)
 
     def _is_core_directory(self, path: str) -> bool:
         return True
