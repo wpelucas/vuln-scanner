@@ -99,7 +99,7 @@ class WordpressSite:
         return self._resolve_path(path, self.get_content_directory())
 
     def get_version(self) -> str:
-        version_path = self.resolve_path('wp-includes/version.php')
+        #version_path = self.resolve_path('wp-includes/version.php')
         context = parse_php_file(version_path)
         try:
             state = context.evaluate(
