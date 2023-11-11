@@ -130,7 +130,6 @@ class WordpressSite:
             yield self.resolve_core_path(path)
         for path in ALTERNATE_RELATIVE_CONTENT_PATHS:
             yield self.resolve_core_path(path)
-        yield self.resolve_core_path('wp-content')
 
     def _locate_content_directory(self) -> str:
         for path in self._generate_possible_content_paths():
