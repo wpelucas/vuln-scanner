@@ -97,8 +97,8 @@ class WordpressSite:
         return self._resolve_path(path, self.get_content_directory())
 
     def get_version(self) -> str:
-        # Always return 'unknown', ignoring the version check
-        return 'unknown'
+        # Always return 'Flywheel', ignoring the version check
+        return 'Flywheel'
 
     def _locate_config_file(self) -> str:
         # Skip checking wp-config.php
