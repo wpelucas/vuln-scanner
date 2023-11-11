@@ -172,15 +172,9 @@ class FileLocator:
                     log.info(f"Skipping {item.path} directory")
                     continue
 
-                # Bypass symlink and root/nobody checks for /www and /staging
+                # Bypass symlink check for /www and /staging directories
                 if path not in ['/www', '/staging']:
                     if item.is_symlink() and self._is_loop(item.path, parents):
-                        continue
-
-                    link_owner_id = os.lstat(item.path).st_uid
-                    link_owner_name = pwd.getpwuid(link_owner_id).pw_name
-                    if link_owner_name in {"root", "nobody"}:
-                        log.warning(f"Skipping {item.path} symlink owned by root or nobody")
                         continue
 
                 target_path = os.path.realpath(item.path)  # Get the target path of the item
