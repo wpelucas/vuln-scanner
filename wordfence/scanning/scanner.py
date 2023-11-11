@@ -167,6 +167,11 @@ class FileLocator:
                 parents = [path]
             contents = os.scandir(path)
             for item in contents:
+                # Skip wp-includes and wp-admin directories
+                if item.is_dir() and item.name in ['wp-includes', 'wp-admin']:
+                    log.info(f"Skipping {item.path} directory")
+                    continue
+
                 # Bypass symlink and root/nobody checks for /www and /staging
                 if path not in ['/www', '/staging']:
                     if item.is_symlink() and self._is_loop(item.path, parents):
