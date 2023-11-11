@@ -138,16 +138,19 @@ class WordpressSite:
         for path in ALTERNATE_RELATIVE_CONTENT_PATHS:
             yield self.resolve_core_path(os.path.join(path, 'wp-content'))
 
-    def _locate_content_directory(self) -> str:
+    def locate_content_directories(self) -> List[str]:
+        valid_directories = []
         for path in self._generate_possible_content_paths():
             log.debug(f'Checking potential content path: {path}')
             possible_themes_path = self._resolve_path('themes', path)
             if os.path.isdir(path) and os.path.isdir(possible_themes_path):
                 log.debug(f'Located content directory at {path}')
-                return path
-        raise WordpressException(
+                valid_directories.append(path)
+        if not valid_directories:
+            raise WordpressException(
                 f'Unable to locate content directory for site at {self.path}'
             )
+        return valid_directories
 
     def get_content_directory(self) -> str:
         if not hasattr(self, 'content_path'):
