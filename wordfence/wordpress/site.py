@@ -46,7 +46,7 @@ class WordpressSite:
                 structure_options: Optional[WordpressStructureOptions] = None,
             ):
         self.path = path
-        #self.core_path = self._locate_core()
+        self.core_path = ''
         self.structure_options = structure_options \
             if structure_options is not None else WordpressStructureOptions()
 
@@ -90,10 +90,7 @@ class WordpressSite:
         return os.path.join(base, path.lstrip('/'))
 
     def resolve_core_path(self, path: str) -> str:
-        return self._resolve_path(path, self.path)
-
-    def resolve_core_path(self, path: str) -> str:
-        return self._resolve_path(path, self.core_path)
+        return os.path.normpath(os.path.join(self.path, path))
 
     def resolve_content_path(self, path: str) -> str:
         return self._resolve_path(path, self.get_content_directory())
