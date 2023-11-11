@@ -68,20 +68,21 @@ class VulnScanSubcommand(Subcommand):
         return self._scan_themes(themes, scanner)
 
     def _scan(
-                self,
-                path: str,
-                scanner: VulnerabilityScanner,
-                check_extensions: bool = False,
-                structure_options: WordpressStructureOptions = None
-            ) -> Dict[str, Vulnerability]:
+            self,
+            path: str,
+            scanner: VulnerabilityScanner,
+            check_extensions: bool = False,
+            structure_options: WordpressStructureOptions = None
+        ) -> Dict[str, Vulnerability]:
         site = WordpressSite(
                 path=path,
                 structure_options=structure_options
             )
-        log.debug(f'Located WordPress files at {site.core_path}')
-        version = site.get_version()
-        log.debug(f'WordPress Core Version: {version}')
-        scanner.scan_core(version)
+        # Commented out the lines which checks for WordPress files and version
+        # log.debug(f'Located WordPress files at {site.core_path}')
+        # version = site.get_version()
+        # log.debug(f'WordPress Core Version: {version}')
+        # scanner.scan_core(version)
         if check_extensions:
             self._scan_plugins(site.get_all_plugins(), scanner)
             self._scan_themes(site.get_themes(), scanner)
