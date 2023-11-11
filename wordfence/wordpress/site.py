@@ -205,13 +205,9 @@ class WordpressSite:
         return default
 
     def _generate_possible_content_paths(self) -> Generator[str, None, None]:
-        # Directly yield the wp-content path in /www
+        # Directly yield the wp-content paths in /www and /staging
         yield "/www/wp-content"
-
-        # Check if the /staging/wp-content directory exists before yielding its path
-        staging_path = "/staging/wp-content"
-        if os.path.isdir(staging_path):
-            yield staging_path
+        yield "/staging/wp-content"
 
         # Existing code
         configured = self._extract_string_from_config('WP_CONTENT_DIR')
@@ -222,6 +218,13 @@ class WordpressSite:
         for path in ALTERNATE_RELATIVE_CONTENT_PATHS:
             yield self.resolve_core_path(path)
         yield self.resolve_core_path('wp-content')
+
+    # Check if the /staging/wp-content directory exists before yielding its path
+    def _check_directory_exists(self, dir_path):
+        if os.path.isdir(dir_path):
+            return True
+        else:
+            return False
 
     def _locate_content_directory(self) -> str:
         for path in self._generate_possible_content_paths():
