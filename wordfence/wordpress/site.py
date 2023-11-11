@@ -98,22 +98,6 @@ class WordpressSite:
     def resolve_content_path(self, path: str) -> str:
         return self._resolve_path(path, self.get_content_directory())
 
-    def get_version(self) -> str:
-        #version_path = self.resolve_path('wp-includes/version.php')
-        context = parse_php_file(version_path)
-        try:
-            state = context.evaluate(
-                    options=EVALUATION_OPTIONS
-                )
-            version = state.get_variable_value('wp_version')
-            if isinstance(version, str):
-                return version
-        except PhpException as exception:
-            raise WordpressException(
-                    f'Unable to parse WordPress version file at {version_path}'
-                ) from exception
-        raise WordpressException('Unable to determine WordPress version')
-
     def _locate_config_file(self) -> str:
         paths = [
                 self.resolve_path('wp-config.php'),
