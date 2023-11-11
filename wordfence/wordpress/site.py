@@ -1,5 +1,4 @@
 import os
-import pwd
 import os.path
 from dataclasses import dataclass, field
 from typing import Optional, List, Generator
@@ -56,15 +55,12 @@ class WordpressSite:
         missing_directories = EXPECTED_CORE_DIRECTORIES.copy()
         try:
             for file in os.scandir(path):
-                try:
-                    if file.is_file():
-                        if file.name in missing_files:
-                            missing_files.remove(file.name)
-                    elif file.is_dir():
-                        if file.name in missing_directories:
-                            missing_directories.remove(file.name)
-                except PermissionError:
-                    continue
+                if file.is_file():
+                    if file.name in missing_files:
+                        missing_files.remove(file.name)
+                elif file.is_dir():
+                    if file.name in missing_directories:
+                        missing_directories.remove(file.name)
             if len(missing_files) > 0 or len(missing_directories) > 0:
                 return False
             return True
@@ -90,15 +86,8 @@ class WordpressSite:
     def _get_child_directories(self, path: str) -> List[str]:
         directories = []
         for file in os.scandir(path):
-            try:
-                if file.is_dir():
-                    uid = file.stat().st_uid
-                    username = pwd.getpwuid(uid).pw_name
-                    if username not in ['root', 'nobody'] and file.name not in ["wp-includes", "wp-admin"]:
-                        directories.append(file.path)
-            except (PermissionError, FileNotFoundError):
-                print(f"Warning: Permission denied or file not found for {file.path}. Skipping this file/directory.")
-                continue
+            if file.is_dir():
+                directories.append(file.path)
         return directories
 
     def _search_for_core_directory(self) -> Optional[str]:
@@ -213,14 +202,9 @@ class WordpressSite:
         return default
 
     def _generate_possible_content_paths(self) -> Generator[str, None, None]:
-        # Only yield the wp-content paths in /www and /staging if they exist
-        if self._check_directory_exists("/www/wp-content"):
-            yield "/www/wp-content"
-        if self._check_directory_exists("/staging/wp-content"):
-            yield "/staging/wp-content"
-
-        # Existing code
-        configured = self._extract_string_from_config('WP_CONTENT_DIR')
+        configured = self._extract_string_from_config(
+                'WP_CONTENT_DIR'
+            )
         if configured is not None:
             yield configured
         for path in self.structure_options.relative_content_paths:
@@ -228,13 +212,6 @@ class WordpressSite:
         for path in ALTERNATE_RELATIVE_CONTENT_PATHS:
             yield self.resolve_core_path(path)
         yield self.resolve_core_path('wp-content')
-
-    # Check if the /staging/wp-content directory exists before yielding its path
-    def _check_directory_exists(self, dir_path):
-        if os.path.isdir(dir_path):
-            return True
-        else:
-            return False
 
     def _locate_content_directory(self) -> str:
         for path in self._generate_possible_content_paths():
