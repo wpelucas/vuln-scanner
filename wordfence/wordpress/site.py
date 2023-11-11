@@ -1,5 +1,6 @@
 import os
 import os.path
+import pwd
 from dataclasses import dataclass, field
 from typing import Optional, List, Generator
 
@@ -54,12 +55,15 @@ class WordpressSite:
         missing_directories = EXPECTED_CORE_DIRECTORIES.copy()
         try:
             for file in os.scandir(path):
-                if file.is_file():
-                    if file.name in missing_files:
-                        missing_files.remove(file.name)
-                elif file.is_dir():
-                    if file.name in missing_directories:
-                        missing_directories.remove(file.name)
+                uid = file.stat().st_uid
+                owner = pwd.getpwuid(uid).pw_name
+                if owner not in ('root', 'nobody'):
+                    if file.is_file():
+                        if file.name in missing_files:
+                            missing_files.remove(file.name)
+                    elif file.is_dir():
+                        if file.name in missing_directories:
+                            missing_directories.remove(file.name)
             if len(missing_files) > 0 or len(missing_directories) > 0:
                 return False
             return True
@@ -84,9 +88,16 @@ class WordpressSite:
 
     def _get_child_directories(self, path: str) -> List[str]:
         directories = []
-        for file in os.scandir(path):
-            if file.is_dir():
-                directories.append(file.path)
+        try:
+            for file in os.scandir(path):
+                uid = file.stat().st_uid
+                owner = pwd.getpwuid(uid).pw_name
+                if file.is_dir() and owner not in ('root', 'nobody'):
+                    directories.append(file.path)
+        except OSError as error:
+            raise WordpressException(
+                    f'Unable to search child directory at {path}'
+                ) from error
         return directories
 
     def _search_for_core_directory(self) -> Optional[str]:
