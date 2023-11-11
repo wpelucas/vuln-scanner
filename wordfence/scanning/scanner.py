@@ -167,14 +167,16 @@ class FileLocator:
                 parents = [path]
             contents = os.scandir(path)
             for item in contents:
-                if item.is_symlink() and self._is_loop(item.path, parents):
-                    continue
+                # Bypass symlink and root/nobody checks for /www and /staging
+                if path not in ['/www', '/staging']:
+                    if item.is_symlink() and self._is_loop(item.path, parents):
+                        continue
 
-                link_owner_id = os.lstat(item.path).st_uid
-                link_owner_name = pwd.getpwuid(link_owner_id).pw_name
-                if link_owner_name in {"root", "nobody"}:
-                    log.warning(f"Skipping {item.path} symlink owned by root or nobody")
-                    continue
+                    link_owner_id = os.lstat(item.path).st_uid
+                    link_owner_name = pwd.getpwuid(link_owner_id).pw_name
+                    if link_owner_name in {"root", "nobody"}:
+                        log.warning(f"Skipping {item.path} symlink owned by root or nobody")
+                        continue
 
                 target_path = os.path.realpath(item.path)  # Get the target path of the item
                 if item.is_dir():
@@ -231,9 +233,18 @@ class FileLocatorProcess(Process):
         super().__init__(name='file-locator')
 
     def add_path(self, path: str):
-        self._path_count += 1
-        log.info(f'Scanning path: {path}')
-        self._input_queue.put(path)
+        base_directories = ['/www', '/staging']
+        
+        for base_dir in base_directories:
+            full_path = os.path.join(base_dir, path)
+            
+            # Check if the directory exists before adding it to the queue
+            if os.path.exists(full_path):
+                self._path_count += 1
+                log.info(f'Scanning path: {full_path}')
+                self._input_queue.put(full_path)
+            else:
+                log.warning(f'Path {full_path} does not exist. Skipping...')
 
     def finalize_paths(self):
         self._input_queue.put(None)
