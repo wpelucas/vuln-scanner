@@ -51,19 +51,19 @@ class WordpressSite:
             if structure_options is not None else WordpressStructureOptions()
 
     def _is_core_directory(self, path: str) -> bool:
-        if os.path.basename(path) in ["wp-includes", "wp-admin"]:
-            return False
-
         missing_files = EXPECTED_CORE_FILES.copy()
         missing_directories = EXPECTED_CORE_DIRECTORIES.copy()
         try:
             for file in os.scandir(path):
-                if file.is_file():
-                    if file.name in missing_files:
-                        missing_files.remove(file.name)
-                elif file.is_dir():
-                    if file.name in missing_directories:
-                        missing_directories.remove(file.name)
+                try:
+                    if file.is_file():
+                        if file.name in missing_files:
+                            missing_files.remove(file.name)
+                    elif file.is_dir():
+                        if file.name in missing_directories:
+                            missing_directories.remove(file.name)
+                except PermissionError:
+                    continue
             if len(missing_files) > 0 or len(missing_directories) > 0:
                 return False
             return True
