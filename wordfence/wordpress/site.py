@@ -51,27 +51,7 @@ class WordpressSite:
             if structure_options is not None else WordpressStructureOptions()
 
     def _is_core_directory(self, path: str) -> bool:
-        missing_files = EXPECTED_CORE_FILES.copy()
-        missing_directories = EXPECTED_CORE_DIRECTORIES.copy()
-        try:
-            for file in os.scandir(path):
-                uid = file.stat().st_uid
-                owner = pwd.getpwuid(uid).pw_name
-                if owner not in ('root', 'nobody'):
-                    if file.is_file():
-                        if file.name in missing_files:
-                            missing_files.remove(file.name)
-                    elif file.is_dir():
-                        if file.name in missing_directories:
-                            missing_directories.remove(file.name)
-            if len(missing_files) > 0 or len(missing_directories) > 0:
-                return False
-            return True
-        except OSError as error:
-            raise WordpressException(
-                    f'Unable to scan directory at {path}'
-                ) from error
-        return False
+        return True
 
     def _extract_core_path_from_index(self) -> Optional[str]:
         try:
@@ -101,33 +81,10 @@ class WordpressSite:
         return directories
 
     def _search_for_core_directory(self) -> Optional[str]:
-        paths = [self.path]
-        while len(paths) > 0:
-            directories = []
-            for path in paths:
-                try:
-                    directories.extend(self._get_child_directories(path))
-                except OSError as error:
-                    raise WordpressException(
-                            f'Unable to search child directory at {path}'
-                        ) from error
-            for directory in directories:
-                if self._is_core_directory(directory):
-                    return directory
-            paths = directories
-        return None
+        return self.path
 
     def _locate_core(self) -> str:
-        if self._is_core_directory(self.path):
-            return self.path
-        path = self._extract_core_path_from_index()
-        if path is None:
-            path = self._search_for_core_directory()
-        if path is not None:
-            return path
-        raise WordpressException(
-                f'Unable to locate WordPress core files under {self.path}'
-            )
+        return self.path
 
     def _resolve_path(self, path: str, base: str) -> str:
         return os.path.join(base, path.lstrip('/'))
