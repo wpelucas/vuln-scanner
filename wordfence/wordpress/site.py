@@ -200,7 +200,7 @@ class WordpressSite:
                     f'{self.path}'
                 )
         if mu and not plugins:
-            log.warning(
+            log.debug(
                     f'No mu-plugins directory found for site at {self.path}'
                 )
         return plugins
