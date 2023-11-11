@@ -173,31 +173,33 @@ class WordpressSite:
             if mu else self.structure_options.relative_plugins_paths
         for path in relative_paths:
             yield self.resolve_core_path(path)
-        yield self.resolve_content_path(
-                'mu-plugins' if mu else 'plugins'
+        for content_path in self.get_content_directory():
+            yield self._resolve_path(
+                'mu-plugins' if mu else 'plugins', content_path
             )
 
     def get_plugins(self, mu: bool = False) -> List[Plugin]:
         log_plugins = 'must-use plugins' if mu else 'plugins'
+        plugins = []
         for path in self._generate_possible_plugins_paths(mu):
             log.debug(f'Checking potential {log_plugins} path: {path}')
             loader = PluginLoader(path)
             try:
-                plugins = loader.load_all()
+                plugins += loader.load_all()
                 log.debug(f'Located {log_plugins} directory at {path}')
-                return plugins
             except ExtensionException:
                 # If extensions can't be loaded, the directory is not valid
                 continue
-        if mu:
+        if not plugins and not mu:
+            raise WordpressException(
+                    f'Unable to locate {log_plugins} directory for site at '
+                    f'{self.path}'
+                )
+        if mu and not plugins:
             log.warning(
                     f'No mu-plugins directory found for site at {self.path}'
                 )
-            return []
-        raise WordpressException(
-                f'Unable to locate {log_plugins} directory for site at '
-                f'{self.path}'
-            )
+        return plugins
 
     def get_all_plugins(self) -> List[Plugin]:
         plugins = self.get_plugins(mu=True)
@@ -208,5 +210,9 @@ class WordpressSite:
         return self.resolve_content_path('themes')
 
     def get_themes(self) -> List[Theme]:
-        loader = ThemeLoader(self.get_theme_directory())
-        return loader.load_all()
+        themes = []
+        for content_path in self.get_content_directory():
+            theme_directory = self._resolve_path('themes', content_path)
+            loader = ThemeLoader(theme_directory)
+            themes += loader.load_all()
+        return themes
