@@ -138,7 +138,7 @@ class WordpressSite:
         for path in ALTERNATE_RELATIVE_CONTENT_PATHS:
             yield self.resolve_core_path(os.path.join(path, 'wp-content'))
 
-    def locate_content_directories(self) -> List[str]:
+    def _locate_content_directory(self) -> List[str]:
         valid_directories = []
         for path in self._generate_possible_content_paths():
             log.debug(f'Checking potential content path: {path}')
