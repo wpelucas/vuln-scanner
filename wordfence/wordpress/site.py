@@ -89,8 +89,13 @@ class WordpressSite:
     def _get_child_directories(self, path: str) -> List[str]:
         directories = []
         for file in os.scandir(path):
-            if file.is_dir() and file.name not in ["wp-includes", "wp-admin"]:
-                directories.append(file.path)
+            try:
+                if file.is_dir():
+                    if file.name not in ["wp-includes", "wp-admin"]:
+                        directories.append(file.path)
+            except PermissionError:
+                print(f"Warning: Permission denied for {file.path}. Skipping this directory.")
+                continue
         return directories
 
     def _search_for_core_directory(self) -> Optional[str]:
