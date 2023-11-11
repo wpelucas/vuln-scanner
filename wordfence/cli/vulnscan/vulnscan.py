@@ -81,7 +81,7 @@ class VulnScanSubcommand(Subcommand):
         log.debug(f'Located WordPress files at {site.core_path}')
         version = site.get_version()
         log.debug(f'WordPress Core Version: {version}')
-        scanner.scan_core(version)
+        #scanner.scan_core(version)
         if check_extensions:
             self._scan_plugins(site.get_all_plugins(), scanner)
             self._scan_themes(site.get_themes(), scanner)
