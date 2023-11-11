@@ -233,11 +233,11 @@ class FileLocatorProcess(Process):
 
     def add_path(self, path: str):
         base_directories = ['/www', '/staging']
-        
+
         # Loop over base directories
         for base_dir in base_directories:
             full_path = os.path.join(base_dir, path)
-            
+
             # Check if the path exists in the base directory
             if os.path.exists(full_path):
                 self._path_count += 1
