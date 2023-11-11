@@ -235,19 +235,19 @@ class FileLocatorProcess(Process):
         super().__init__(name='file-locator')
 
     def add_path(self, path: str):
-        base_directories = ['/www', '/staging']
+        base_directories = ["/www"]
+        if os.path.exists("/staging"):
+            base_directories.append("/staging")
 
-        # Loop over base directories
         for base_dir in base_directories:
             full_path = os.path.join(base_dir, path)
 
-            # Check if the path exists in the base directory
             if os.path.exists(full_path):
                 self._path_count += 1
-                log.info(f'Scanning path: {full_path}')
+                log.info(f"Scanning path: {full_path}")
                 self._input_queue.put(full_path)
             else:
-                log.warning(f'Path {full_path} does not exist. Skipping...')
+                log.warning(f"Path {full_path} does not exist. Skipping...")
 
     def finalize_paths(self):
         self._input_queue.put(None)
