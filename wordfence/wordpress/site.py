@@ -1,7 +1,6 @@
 import os
 import os.path
 import pwd
-from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Optional, List, Generator
 
@@ -35,12 +34,9 @@ ALTERNATE_RELATIVE_CONTENT_PATHS = [
 
 @dataclass
 class WordpressStructureOptions:
-    core_path: str = ''
-    content_relative_path: str = '/wp-content'
-    content_relative_paths: List[str] = field(default_factory=lambda: ['/www', '/staging'])
-    plugin_relative_path: str = '/plugins'
-    mu_plugin_relative_path: str = '/mu-plugins'
-    theme_relative_path: str = '/themes'
+    relative_content_paths: List[str] = field(default_factory=list)
+    relative_plugins_paths: List[str] = field(default_factory=list)
+    relative_mu_plugins_paths: List[str] = field(default_factory=list)
 
 
 class WordpressSite:
@@ -52,8 +48,13 @@ class WordpressSite:
             ):
         self.path = path
         self.core_path = ''
-        self.structure_options = structure_options \
-            if structure_options is not None else WordpressStructureOptions()
+        if structure_options is not None:
+            self.structure_options = structure_options
+        else:
+            self.structure_options = WordpressStructureOptions()
+            self.structure_options.relative_content_paths.append('../www')
+            if os.path.isdir(os.path.join(path, 'staging')):
+                self.structure_options.relative_content_paths.append('../staging')
 
     def _is_core_directory(self, path: str) -> bool:
         return True
@@ -130,22 +131,21 @@ class WordpressSite:
             )
         if configured is not None:
             yield configured
-        for path in self.structure_options.content_relative_paths:
+        for path in self.structure_options.relative_content_paths:
             yield self.resolve_core_path(path)
         for path in ALTERNATE_RELATIVE_CONTENT_PATHS:
             yield self.resolve_core_path(path)
 
-    def _locate_content_directory(self) -> Path:
-        for path in self.structure_options.content_relative_paths:
-            full_path = self.core_path / path
-            # Check if the full path exists before proceeding
-            if full_path.exists():
-                content_path = full_path / self.structure_options.content_relative_path
-                # Check if the content path exists before proceeding
-                if content_path.exists() and (content_path / 'plugins').exists():
-                    return content_path
-
-        raise WordpressException(f"Unable to locate content directory for site at {self.core_path}")
+    def _locate_content_directory(self) -> str:
+        for path in self._generate_possible_content_paths():
+            log.debug(f'Checking potential content path: {path}')
+            possible_themes_path = self._resolve_path('themes', path)
+            if os.path.isdir(path) and os.path.isdir(possible_themes_path):
+                log.debug(f'Located content directory at {path}')
+                return path
+        raise WordpressException(
+                f'Unable to locate content directory for site at {self.path}'
+            )
 
     def get_content_directory(self) -> str:
         if not hasattr(self, 'content_path'):
