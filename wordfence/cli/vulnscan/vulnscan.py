@@ -149,7 +149,7 @@ class VulnScanSubcommand(Subcommand):
                 scanner: VulnerabilityScanner,
                 structure_options: WordpressStructureOptions = None
             ) -> None:
-        log.info(f'Scanning site at {path}...')
+        #log.info(f'Scanning site at {path}...')
         self._scan(
                 path,
                 scanner,
