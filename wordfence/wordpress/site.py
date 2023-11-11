@@ -99,61 +99,27 @@ class WordpressSite:
         return self._resolve_path(path, self.get_content_directory())
 
     def get_version(self) -> str:
-    # Always return 'unknown', ignoring the version check
+        # Always return 'unknown', ignoring the version check
         return 'unknown'
 
     def _locate_config_file(self) -> str:
-        paths = [
-                self.resolve_path('wp-config.php'),
-                os.path.join(os.path.dirname(self.path), 'wp-config.php')
-            ]
-        for path in paths:
-            if os.path.isfile(path):
-                return path
+        # Skip checking wp-config.php
         return None
 
     def _parse_config_file(self) -> Optional[PhpState]:
-        config_path = self._locate_config_file()
-        try:
-            if config_path is not None:
-                context = parse_php_file(config_path)
-                # raise Exception('Exit early')
-                return context.evaluate(
-                        options=EVALUATION_OPTIONS
-                    )
-        except PhpException as exception:
-            # Ignore config files that cannot be parsed
-            log.debug(
-                    f'Unable to parse WordPress config file at {config_path}: '
-                    f'{exception}'
-                )
+        # Skip parsing wp-config.php
         return None
 
     def _get_parsed_config_state(self) -> PhpState:
-        if not hasattr(self, 'config_state'):
-            self.config_state = self._parse_config_file()
-        return self.config_state
+        # Skip getting parsed config state
+        return None
 
     def _extract_string_from_config(
                 self,
                 constant: str,
                 default: Optional[str] = None
             ) -> str:
-        try:
-            state = self._get_parsed_config_state()
-            if state is not None:
-                path = state.get_constant_value(
-                        name=constant,
-                        default_to_name=False
-                    )
-                if isinstance(path, str):
-                    return path
-        except PhpException as exception:
-            # Just use the default if parsing errors occur
-            log.warning(
-                    f'Unable to extract constant {constant} from WordPress '
-                    f'config: {exception}'
-                )
+        # Skip extracting strings from config
         return default
 
     def _generate_possible_content_paths(self) -> Generator[str, None, None]:
