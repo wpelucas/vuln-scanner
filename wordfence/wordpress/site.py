@@ -98,6 +98,10 @@ class WordpressSite:
     def resolve_content_path(self, path: str) -> str:
         return self._resolve_path(path, self.get_content_directory())
 
+    def get_version(self) -> str:
+    # Always return 'unknown', ignoring the version check
+        return 'unknown'
+
     def _locate_config_file(self) -> str:
         paths = [
                 self.resolve_path('wp-config.php'),
