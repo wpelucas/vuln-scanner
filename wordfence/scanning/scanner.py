@@ -187,10 +187,13 @@ class FileLocator:
                     except PermissionError:
                         log.warning(f"Skipping {target_path} due to insufficient permissions")
                 elif item.is_file():
-                    if not self.file_filter.filter(target_path):
-                        continue
-                    self.located_count += 1
-                    yield target_path
+                    try:
+                        if not self.file_filter.filter(target_path):
+                            continue
+                        self.located_count += 1
+                        yield target_path
+                    except PermissionError:
+                        log.warning(f"Skipping {target_path} due to insufficient permissions")
         except OSError as os_error:
             detail = str(os_error)
             raise ScanningIoException(
