@@ -205,7 +205,7 @@ class VulnScanSubcommand(Subcommand):
                 self._initialize_filter(feed_variant)
             )
         structure_options = WordpressStructureOptions(
-                core_path=self.config.core_path,
+                #core_path=self.config.core_path,
                 content_relative_path=self.config.content_relative_path,
                 content_relative_paths=self.config.content_relative_paths,
                 plugin_relative_path=self.config.plugin_relative_path,
