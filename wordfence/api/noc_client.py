@@ -4,9 +4,10 @@ from urllib.parse import urlencode
 
 from .licensing import License
 from .exceptions import ApiException
+from .user_agent import get_user_agent
 from ..util.validation import Validator, ValidationException
 
-DEFAULT_TIMEOUT = 30
+DEFAULT_TIMEOUT = 180
 
 
 class NocClient:
@@ -37,12 +38,47 @@ class NocClient:
         query['cli'] = 1
         return query
 
-    def request(self, action: str, query: dict = None):
-        query = self.build_query(action, query)
+    def request(
+                self,
+                action: str,
+                query: Optional[dict] = None,
+                body: Optional[dict] = None,
+                json: bool = True,
+                raw_query: bool = False
+            ):
+        if raw_query:
+            # Send only the action and license key, e.g.
+            # <base_url>?action=<action>&k=<license>
+            exact = {'action': action}
+            if self.license is not None:
+                exact['k'] = self.license.key
+            if query:
+                exact.update(query)
+            query = exact
+        else:
+            query = self.build_query(action, query)
         url = self.base_url + '?' + urlencode(query)
+        headers = {
+            'User-Agent': get_user_agent()
+        }
         try:
-            response = requests.get(url, timeout=self.timeout)
-            return response.json()
+            if body is None:
+                response = requests.get(
+                        url,
+                        timeout=self.timeout,
+                        headers=headers
+                    )
+            else:
+                response = requests.post(
+                        url,
+                        timeout=self.timeout,
+                        headers=headers,
+                        data=body
+                    )
+            if json:
+                return response.json()
+            else:
+                return response.content
         except Exception as error:
             raise ApiException('Request failed') from error
 
