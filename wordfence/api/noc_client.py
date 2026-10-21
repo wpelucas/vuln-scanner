@@ -28,6 +28,9 @@ class NocClient:
         raise ApiException('No default base URL is defined')
 
     def build_query(self, action: str, base_query: dict = None) -> dict:
+        # The cli parameter is never sent: the API rejects this license key
+        # with "the Wordfence key you're using is not in a valid format"
+        # for any action that carries it.
         if base_query is None:
             query = {}
         else:
@@ -35,26 +38,10 @@ class NocClient:
         query['action'] = action
         if self.license is not None:
             query['k'] = self.license.key
-        query['cli'] = 1
         return query
 
-    def request(
-                self,
-                action: str,
-                query: dict = None,
-                raw_query: bool = False
-            ):
-        if raw_query:
-            # Send only the action and license key, e.g.
-            # <base_url>?action=<action>&k=<license>
-            exact = {'action': action}
-            if self.license is not None:
-                exact['k'] = self.license.key
-            if query:
-                exact.update(query)
-            query = exact
-        else:
-            query = self.build_query(action, query)
+    def request(self, action: str, query: dict = None):
+        query = self.build_query(action, query)
         url = self.base_url + '?' + urlencode(query)
         headers = {
             'User-Agent': get_user_agent()
